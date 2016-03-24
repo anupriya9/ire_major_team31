@@ -8,6 +8,7 @@ target=open("om.txt",'w')
 target.truncate()
 f1=0
 f2=0
+max_val=0
 class authors_handler(xml.sax.ContentHandler):
 #target=open("a.txt",'w')
 #target.truncate()
@@ -44,14 +45,19 @@ class authors_handler(xml.sax.ContentHandler):
 		global target
 		global f1
 		global f2 
+		global max_val
 		#print self.CurrentData,tag
 		if self.CurrentData=="author":
 #print "author:",self.author
 			#print f1, f2
+			temp_author1=self.author.encode("utf8").replace('\n',"")
+			temp_author=temp_author1.encode("utf8").strip(' ')
 			if f1*f2==1:
-				dict_author[self.author]=i
+				dict_author[temp_author]=i
+				max_val=max(max_val,i)
 				
 			f2=0
+			self.author=""
 		elif tag=="www":
 			f1=0	
 			#print f1
@@ -60,7 +66,7 @@ class authors_handler(xml.sax.ContentHandler):
 	def characters(self,content):
 		if self.CurrentData=="author":
 		#if self.properTagFound==1:
-			self.author=content
+			self.author+=content
 
 
 
@@ -69,11 +75,11 @@ if ( __name__ == "__main__"):
 	parser.setFeature(xml.sax.handler.feature_namespaces,0)
 	Handler=authors_handler()
 	parser.setContentHandler(Handler)
-	parser.parse("dblp.xml")
+	parser.parse("../dblp.xml")
 
 od = collections.OrderedDict(sorted(dict_author.items()))
-
-for key in od:
-		target.write(key+ " " + str(od[key])+"\n")
+print max_val
+'''for key in od:
+		target.write(key+ "#" + str(od[key])+"\n")
 #print dict_author	
-		
+'''		
